@@ -1,36 +1,32 @@
-import os
-
-from PIL import Image
-
-from fastapi import APIRouter
-from markdown_it.rules_inline import image
-from numpy.f2py.auxfuncs import throw_error
-
-from webservices import analyze
+from fastapi import APIRouter, UploadFile
+from fastapi.params import File
+from queue_services import add_task_to_queue
+from webservices import save_image_from_url, check_job_status, save_image_from_user, get_name_for_id, validate_image
 
 router = APIRouter()
 
 
-def get_name_for_id(image_id: int):
-    valid_extensions = ('.jpg', '.jpeg')
-    try:
-        files = sorted(os.listdir('./resources'))
-        image_files = [file for file in files if file.lower().endswith(valid_extensions)]
-        if image_id < 1 or image_id > len(image_files):
-            raise ValueError("Provided ID is out of bounds")
-        return image_files[image_id - 1]
-    except Exception as e:
-        return f"An error occurred: {e}"
-
-
-@router.get("/analyze-image/local")
-def get_locale_image(image_id):
+@router.get("/analyze-image/local", description="Provide the ID or a name of the Image")
+def get_local_image(image_id):
     if image_id.isnumeric():
-        analyze(get_name_for_id(int(image_id)))
+        return add_task_to_queue('./resources/' + get_name_for_id(int(image_id)))
     else:
-        analyze(image_id)
+        validate_image(image_id)
+        return add_task_to_queue('./resources/' + image_id)
 
 
-@router.get("/hello")
-def get_users():
-    return "hello"
+@router.get("/analyze-image/url")
+def get_image_from_url(url):
+    filename = save_image_from_url(url)
+    return add_task_to_queue(filename)
+
+
+@router.post("/upload/", description="Files required in format .jpg or .jpeg!")
+async def upload_file(file: UploadFile = File(...)):
+    filename = await save_image_from_user(file)
+    return add_task_to_queue(filename)
+
+
+@router.get("/check-job-status", description="Provide the ID or an Image Processing Job")
+def get_job_status(job_id):
+    return check_job_status(job_id)
