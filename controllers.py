@@ -11,8 +11,7 @@ def get_local_image(image_id):
     if image_id.isnumeric():
         return add_task_to_queue('./resources/' + get_name_for_id(int(image_id)))
     else:
-        validate_image(image_id)
-        return add_task_to_queue('./resources/' + image_id)
+        return add_task_to_queue('./resources/' + validate_image(image_id))
 
 
 @router.get("/analyze-image/url")
