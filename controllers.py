@@ -6,7 +6,7 @@ from webservices import save_image_from_url, check_job_status, save_image_from_u
 router = APIRouter()
 
 
-@router.get("/analyze-image/local", description="Provide the ID or a name of the Image")
+@router.get("/analyze-image/local", description="Provide the ID or a name of the image to analyze.\nAvailable image options:\n1. cameleon\n2. cctv\n3. hill\n4. street\n5. suits\n6. walker")
 def get_local_image(image_id):
     if image_id.isnumeric():
         return add_task_to_queue('./resources/' + get_name_for_id(int(image_id)))
