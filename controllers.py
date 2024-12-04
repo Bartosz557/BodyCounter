@@ -20,7 +20,7 @@ def get_image_from_url(url):
     return add_task_to_queue(filename)
 
 
-@router.post("/upload/", description="Required files formats: .jpg or .jpeg!")
+@router.post("/upload-image/", description="Required files formats: .jpg or .jpeg!")
 async def upload_file(file: UploadFile = File(...)):
     filename = await save_image_from_user(file)
     return add_task_to_queue(filename)
