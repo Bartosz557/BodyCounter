@@ -20,12 +20,12 @@ def get_image_from_url(url):
     return add_task_to_queue(filename)
 
 
-@router.post("/upload/", description="Files required in format .jpg or .jpeg!")
+@router.post("/upload/", description="Required files formats: .jpg or .jpeg!")
 async def upload_file(file: UploadFile = File(...)):
     filename = await save_image_from_user(file)
     return add_task_to_queue(filename)
 
 
-@router.get("/check-job-status", description="Provide the ID or an Image Processing Job")
+@router.get("/check-job-status", description="Provide the ID of an Image Processing Job")
 def get_job_status(job_id):
     return check_job_status(job_id)
